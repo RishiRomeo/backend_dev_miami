@@ -6,6 +6,24 @@ from datetime import datetime
 logger = logging.getLogger(__name__)
 
 def calculate_coinbase_buy_cost(orders, quantity):
+    """Calculate the total cost to buy a specified quantity of BTC from Coinbase's order book.
+    1. Recursively fetches the order book data.
+    2. Iterates through the asks to determine how much BTC can be bought at each price level.
+    3. Sums the total cost and the quantity filled.
+
+    Args:
+        orders (list): List of lists containing asks from Coinbase's order book.
+        quantity (float): The amount of BTC to buy.
+
+    Returns:
+        tuple: A tuple containing the total cost and the quantity filled.
+
+    Understanding the GET response from Coinbase:
+    - Each ask is represented as a list: [price, size, num_orders].
+    - Coinbase L1 order book provides us the BEST price at which we can buy BTC.
+    - The highest amount (in BTC) we can buy for the lowest price is the number of orders * size.
+    - Syntactically, that could be represented as orders[0][1] * orders[0][2]
+    """
     total_cost = 0
     remaining = quantity
     
@@ -26,6 +44,11 @@ def calculate_coinbase_buy_cost(orders, quantity):
     return total_cost, quantity - remaining
 
 def calculate_coinbase_sell_revenue(orders, quantity):
+    """Calculate the total revenue from selling a specified quantity of BTC on Coinbase.
+    Same logic as buying.
+    Only noteworthy difference is that we are selling BTC, so we are looking at bids instead of asks.
+    Coinbase's order book provides us the BEST price at which we can sell BTC in the same fmt as buying.
+    """
     total_revenue = 0
     remaining = quantity
     
@@ -46,6 +69,23 @@ def calculate_coinbase_sell_revenue(orders, quantity):
     return total_revenue, quantity - remaining
 
 def calculate_gemini_buy_cost(orders, quantity):
+    """Calculate the total cost to buy a specified quantity of BTC from Gemini's order book.
+    1. Recursively fetches the order book data.
+    2. Iterates through the asks to determine how much BTC can be bought at each price level.
+    3. Sums the total cost and the quantity filled.
+    Args:
+        orders (list): List of dictionaries containing asks from Gemini's order book.
+        quantity (float): The amount of BTC to buy.
+
+    Returns:
+        tuple: A tuple containing the total cost and the quantity filled.
+    Understanding the GET response from Gemini:
+    - Each ask is represented as a dictionary with 'price' and 'amount'.
+    - Gemini order book provides us the BEST price at which we can buy BTC.
+    - The highest amount (in BTC) we can buy for the lowest price is the amount * price.
+    - Syntactically, that could be represented simply as orders[0]['amount'] * orders[0]['price']
+    for the best cost.
+    """
     total_cost = 0
     remaining = quantity
     
@@ -66,6 +106,12 @@ def calculate_gemini_buy_cost(orders, quantity):
     return total_cost, quantity - remaining
 
 def calculate_gemini_sell_revenue(orders, quantity):
+    """Calculate the total revenue from selling a specified quantity of BTC on Gemini.
+    Same logic as buying.
+    Only noteworthy difference is that we are selling BTC, so we are looking at bids instead of asks.
+    Gemini's order book provides us the BEST price at which we can sell BTC in the
+    same fmt as buying.
+    """
     total_revenue = 0
     remaining = quantity
     
