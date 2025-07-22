@@ -8,7 +8,7 @@ Prerequisites (for running on UV)
 2. cd into local directory
 3. run command $uv run main.py
 
-You can also run this using python3 main.py
+You can also run this without uv by running $python3 main.py
 If running this way, please make sure you have the following libraries (included in pyproject.toml) 
 
 dependencies = [
